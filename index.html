@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Una invitación para ti</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=DM+Sans:wght@400;500&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg1:#fff1f3; --bg2:#ffe0d6; --ink:#3a1830; --soft:#7a4a62;
+  --card:#ffffffcc; --rose:#e8456b; --rose-ink:#fff; --line:#f3b8c6;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg1:#1a1230; --bg2:#3a1636; --ink:#ffeef2; --soft:#e2b6c8;
+    --card:#2a1c4599; --rose:#ff6f91; --rose-ink:#2a0b18; --line:#5b3a6e; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#1a1230; --bg2:#3a1636; --ink:#ffeef2; --soft:#e2b6c8;
+  --card:#2a1c4599; --rose:#ff6f91; --rose-ink:#2a0b18; --line:#5b3a6e; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100%;display:grid;place-items:center;padding:24px 18px;
+  font-family:"DM Sans",system-ui,sans-serif;color:var(--ink);
+  background:radial-gradient(120% 90% at 50% 0%,var(--bg2),var(--bg1) 70%) var(--bg1);
+  overflow-x:hidden;
+}
+main{width:100%;max-width:440px;text-align:center;position:relative;z-index:1}
+.heart{font-size:56px;line-height:1;display:inline-block;animation:beat 1.6s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
+h1{
+  font-family:"Fraunces",Georgia,serif;font-weight:500;font-size:clamp(2.2rem,9vw,3rem);
+  line-height:1.08;margin:14px 0 10px;letter-spacing:-.01em;
+}
+.lead{font-size:1.05rem;line-height:1.55;color:var(--soft);margin:0 auto 22px;max-width:34ch}
+.plan{
+  background:var(--card);border:1.5px dashed var(--line);border-radius:20px;
+  padding:16px 18px;margin:0 0 26px;text-align:left;backdrop-filter:blur(6px);
+}
+.plan div{display:flex;gap:12px;padding:7px 0;align-items:baseline}
+.plan dt{flex:0 0 64px;color:var(--soft);font-size:.9rem}
+.plan dd{margin:0;font-weight:500}
+.btns{position:relative;height:64px;display:flex;justify-content:center;gap:14px}
+button{
+  font:inherit;font-weight:500;font-size:1.05rem;border-radius:999px;cursor:pointer;
+  padding:14px 28px;border:2px solid var(--rose);transition:transform .2s;
+}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+#yes{background:var(--rose);color:var(--rose-ink)}
+#yes:hover{transform:scale(1.06)}
+#no{background:transparent;color:var(--rose)}
+#no.free{position:fixed;transition:left .25s,top .25s}
+.wa{display:none;margin-top:8px;background:var(--rose);color:var(--rose-ink);text-decoration:none;font-weight:500;border-radius:999px;padding:14px 28px}
+.wa.on{display:inline-block}
+.wa:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.done{display:none}
+.done.on{display:block;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.ask.off{display:none}
+.fall{position:fixed;top:-40px;font-size:24px;pointer-events:none;z-index:0;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.heart,.fall{animation:none}.done.on{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <section class="ask" id="ask">
+    <div class="heart" aria-hidden="true">💌</div>
+    <h1 id="title">¿Quieres salir conmigo?</h1>
+    <p class="lead" id="lead">Llevo tiempo queriendo invitarte, y creo que una buena conversación y un buen rato juntos se nos darían muy bien.</p>
+    <dl class="plan">
+      <div><dt>Cuándo</dt><dd id="when">Sábado, 7:00 p. m.</dd></div>
+      <div><dt>Dónde</dt><dd id="where">Un lugar que te va a gustar</dd></div>
+      <div><dt>Plan</dt><dd id="what">Cenar, platicar y reírnos mucho</dd></div>
+    </dl>
+    <div class="btns">
+      <button id="yes">Sí, quiero</button>
+      <button id="no">Mejor no</button>
+    </div>
+  </section>
+  <section class="done" id="done" aria-live="polite">
+    <div class="heart" aria-hidden="true">💖</div>
+    <h1 id="doneTitle">¡Dijiste que sí!</h1>
+    <p class="lead" id="doneText">Me hiciste el día. Nos vemos pronto.</p>
+    <a class="wa" id="wa" target="_blank" rel="noopener">Avisarle por WhatsApp</a>
+  </section>
+</main>
+<script>
+/* ===== PERSONALIZA AQUÍ ===== */
+var CONFIG = {
+  nombre: "",                       // Ej: "Camila" (déjalo vacío para no usar nombre)
+  cuando: "Sábado, 7:00 p. m.",
+  donde:  "Un lugar que te va a gustar",
+  plan:   "Cenar, platicar y reírnos mucho",
+  mensaje:"Llevo tiempo queriendo invitarte, y creo que una buena conversación y un buen rato juntos se nos darían muy bien.",
+  respuesta:"Me hiciste el día. Nos vemos pronto.",
+  whatsapp:"529511917474",                      // Tu número con código de país, solo dígitos. Ej: "523312345678"
+  mensajeWa:"¡Sí quiero salir contigo! 💖"
+};
+/* ============================ */
+var $ = function(id){return document.getElementById(id)};
+if (CONFIG.nombre) {
+  $("title").textContent = CONFIG.nombre + ", ¿quieres salir conmigo?";
+  $("doneTitle").textContent = "¡Dijiste que sí, " + CONFIG.nombre + "!";
+}
+$("when").textContent = CONFIG.cuando;
+$("where").textContent = CONFIG.donde;
+$("what").textContent = CONFIG.plan;
+$("lead").textContent = CONFIG.mensaje;
+$("doneText").textContent = CONFIG.respuesta;
+if (CONFIG.whatsapp) {
+  var num = CONFIG.whatsapp.replace(/\D/g, "");
+  $("wa").href = "https://wa.me/" + num + "?text=" + encodeURIComponent(CONFIG.mensajeWa);
+  $("wa").classList.add("on");
+}
+
+var no = $("no");
+function dodge(e){
+  if (e) e.preventDefault();
+  var w = window.innerWidth, h = window.innerHeight;
+  var bw = no.offsetWidth, bh = no.offsetHeight;
+  no.classList.add("free");
+  no.style.left = Math.max(8, Math.random() * (w - bw - 16)) + "px";
+  no.style.top  = Math.max(8, Math.random() * (h - bh - 16)) + "px";
+}
+no.addEventListener("mouseenter", dodge);
+no.addEventListener("touchstart", dodge, {passive:false});
+no.addEventListener("click", dodge);
+
+$("yes").addEventListener("click", function(){
+  $("ask").classList.add("off");
+  $("done").classList.add("on");
+  no.style.display = "none";
+  var icons = ["💖","💗","💕","🌹","✨"];
+  for (var i = 0; i < 36; i++) {
+    var s = document.createElement("span");
+    s.className = "fall";
+    s.textContent = icons[i % icons.length];
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.animationDuration = (3 + Math.random() * 3) + "s";
+    s.style.animationDelay = (Math.random() * 1.5) + "s";
+    document.body.appendChild(s);
+  }
+});
+</script>
+</body>
+</html>
