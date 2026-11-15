@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Una invitación para ti</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=DM+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,400&family=DM+Sans:wght@400;500&display=swap">
 <style>
 :root{
   box-sizing:border-box;
@@ -24,129 +24,259 @@
   --bg1:#1a1230; --bg2:#3a1636; --ink:#ffeef2; --soft:#e2b6c8;
   --card:#2a1c4599; --rose:#ff6f91; --rose-ink:#2a0b18; --line:#5b3a6e; color-scheme:dark;
 }
-html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
 *{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-snap-type:y proximity;scroll-behavior:smooth}
 body{
-  margin:0;min-height:100%;display:grid;place-items:center;padding:24px 18px;
-  font-family:"DM Sans",system-ui,sans-serif;color:var(--ink);
-  background:radial-gradient(120% 90% at 50% 0%,var(--bg2),var(--bg1) 70%) var(--bg1);
+  margin:0;font-family:"DM Sans",system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(180deg,var(--bg2),var(--bg1) 45%,var(--bg2)) var(--bg1);
   overflow-x:hidden;
 }
-main{width:100%;max-width:440px;text-align:center;position:relative;z-index:1}
-.heart{font-size:56px;line-height:1;display:inline-block;animation:beat 1.6s ease-in-out infinite}
+section{min-height:100svh;display:grid;place-items:center;padding:28px 16px;scroll-snap-align:start;position:relative}
+.wrap{width:100%;max-width:560px;text-align:center}
+h1,h2{font-family:"Fraunces",Georgia,serif;font-weight:500;letter-spacing:-.01em;line-height:1.08;margin:0 0 12px}
+h1{font-size:clamp(2.4rem,11vw,4.8rem)}
+h2{font-size:clamp(1.9rem,8vw,2.8rem)}
+.lead{font-size:1.05rem;line-height:1.55;color:var(--soft);margin:0 auto 22px;max-width:36ch}
+.heart{font-size:52px;line-height:1;display:inline-block;animation:beat 1.6s ease-in-out infinite}
 @keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
-h1{
-  font-family:"Fraunces",Georgia,serif;font-weight:500;font-size:clamp(2.2rem,9vw,3rem);
-  line-height:1.08;margin:14px 0 10px;letter-spacing:-.01em;
-}
-.lead{font-size:1.05rem;line-height:1.55;color:var(--soft);margin:0 auto 22px;max-width:34ch}
-.plan{
-  background:var(--card);border:1.5px dashed var(--line);border-radius:20px;
-  padding:16px 18px;margin:0 0 26px;text-align:left;backdrop-filter:blur(6px);
-}
-.plan div{display:flex;gap:12px;padding:7px 0;align-items:baseline}
-.plan dt{flex:0 0 64px;color:var(--soft);font-size:.9rem}
-.plan dd{margin:0;font-weight:500}
-.btns{position:relative;height:64px;display:flex;justify-content:center;gap:14px}
-button{
+
+/* 1. Portada */
+.hero{display:grid;grid-template-columns:clamp(56px,18vw,190px) minmax(0,1fr) clamp(56px,18vw,190px);gap:10px;align-items:center;width:100%;max-width:1000px}
+.side{display:grid;place-items:center}
+.side img{width:100%;height:auto;max-height:60vh;object-fit:contain;border-radius:16px}
+.side .ph{font-size:clamp(30px,9vw,72px)}
+.poem{font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:400;font-size:clamp(1.05rem,3.6vw,1.4rem);line-height:1.65;color:var(--soft);white-space:pre-line;margin:18px auto 0;max-width:30ch}
+.hint{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;color:var(--soft);font-size:.9rem}
+.hint span{display:block;font-size:1.4rem;animation:beat 1.6s ease-in-out infinite}
+
+/* 2. Carrete */
+.rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:24px;background:var(--card)}
+.rail::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:center}
+.pic{aspect-ratio:4/3;position:relative;display:grid;place-items:center;font-size:64px;background:linear-gradient(135deg,var(--bg2),var(--line))}
+.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cap{padding:16px 18px 20px}
+.cap .t{font-family:"Fraunces",Georgia,serif;font-size:1.55rem;margin:2px 0 6px}
+.cap .h{color:var(--rose);font-weight:500}
+.cap p{margin:0;color:var(--soft);line-height:1.5}
+.ctrl{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px}
+.dots{display:flex;gap:8px}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--line);transition:.25s}
+.dots i.on{background:var(--rose);transform:scale(1.35)}
+
+/* 3. Pregunta */
+button,.wa{
   font:inherit;font-weight:500;font-size:1.05rem;border-radius:999px;cursor:pointer;
   padding:14px 28px;border:2px solid var(--rose);transition:transform .2s;
 }
-button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.nav{padding:8px 16px;font-size:1.2rem;background:transparent;color:var(--rose)}
+.plan{background:var(--card);border:1.5px dashed var(--line);border-radius:20px;padding:12px 18px;margin:0 0 26px;text-align:left}
+.plan div{display:flex;gap:12px;padding:6px 0;align-items:baseline}
+.plan dt{flex:0 0 64px;color:var(--soft);font-size:.9rem}
+.plan dd{margin:0;font-weight:500}
+.btns{height:64px;display:flex;justify-content:center;gap:14px}
 #yes{background:var(--rose);color:var(--rose-ink)}
 #yes:hover{transform:scale(1.06)}
 #no{background:transparent;color:var(--rose)}
-#no.free{position:fixed;transition:left .25s,top .25s}
-.wa{display:none;margin-top:8px;background:var(--rose);color:var(--rose-ink);text-decoration:none;font-weight:500;border-radius:999px;padding:14px 28px}
+#no.free{position:absolute;transition:left .35s,top .35s;z-index:3}
+.final{overflow:hidden}
+.wa{display:none;margin-top:8px;background:var(--rose);color:var(--rose-ink);text-decoration:none}
 .wa.on{display:inline-block}
-.wa:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .done{display:none}
 .done.on{display:block;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
 @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 .ask.off{display:none}
-.fall{position:fixed;top:-40px;font-size:24px;pointer-events:none;z-index:0;animation:fall linear forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.heart,.fall{animation:none}.done.on{animation:none}}
+.fall{position:fixed;top:-120px;pointer-events:none;z-index:9;animation:fall linear forwards}
+.fall.img{object-fit:contain}  //.fall.img{border-radius:12px;object-fit:cover;box-shadow:0 4px 14px #0004}
+@keyframes fall{to{transform:translateY(120vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.heart,.hint span,.fall{animation:none}.done.on{animation:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<main>
-  <section class="ask" id="ask">
-    <div class="heart" aria-hidden="true">💌</div>
-    <h1 id="title">¿Quieres salir conmigo?</h1>
-    <p class="lead" id="lead">Llevo tiempo queriendo invitarte, y creo que una buena conversación y un buen rato juntos se nos darían muy bien.</p>
-    <dl class="plan">
-      <div><dt>Cuándo</dt><dd id="when">Sábado, 7:00 p. m.</dd></div>
-      <div><dt>Dónde</dt><dd id="where">Un lugar que te va a gustar</dd></div>
-      <div><dt>Plan</dt><dd id="what">Cenar, platicar y reírnos mucho</dd></div>
-    </dl>
-    <div class="btns">
-      <button id="yes">Sí, quiero</button>
-      <button id="no">Mejor no</button>
+
+<section id="s1">
+  <div class="hero">
+    <div class="side" id="gifL"></div>
+    <div>
+      <div class="heart" aria-hidden="true">💌</div>
+      <h1 id="name">Para ti</h1>
+      <p class="poem" id="poem"></p>
     </div>
-  </section>
-  <section class="done" id="done" aria-live="polite">
-    <div class="heart" aria-hidden="true">💖</div>
-    <h1 id="doneTitle">¡Dijiste que sí!</h1>
-    <p class="lead" id="doneText">Me hiciste el día. Nos vemos pronto.</p>
-    <a class="wa" id="wa" target="_blank" rel="noopener">Avisarle por WhatsApp</a>
-  </section>
-</main>
+    <div class="side" id="gifR"></div>
+  </div>
+  <div class="hint">Desliza hacia abajo<span aria-hidden="true">⌄</span></div>
+</section>
+
+<section id="s2">
+  <div class="wrap">
+    <h2>Esto es lo que tengo pensado</h2>
+    <p class="lead">Tres paradas para pasar un buen rato juntos.</p>
+    <div class="rail" id="rail"></div>
+    <div class="ctrl">
+      <button class="nav" id="prev" aria-label="Anterior">‹</button>
+      <div class="dots" id="dots"></div>
+      <button class="nav" id="next" aria-label="Siguiente">›</button>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="final">
+  <div class="wrap">
+    <div class="ask" id="ask">
+      <h2 id="title">¿Quieres salir conmigo?</h2>
+      <dl class="plan">
+        <div><dt>Cuándo</dt><dd id="when"></dd></div>
+        <div><dt>Dónde</dt><dd id="where"></dd></div>
+      </dl>
+      <div class="btns">
+        <button id="yes">Sí, quiero</button>
+        <button id="no">Mejor no</button>
+      </div>
+    </div>
+    <div class="done" id="done" aria-live="polite">
+      <div class="heart" aria-hidden="true">💖</div>
+      <h2 id="doneTitle">¡Dijiste que sí!</h2>
+      <p class="lead" id="doneText"></p>
+      <a class="wa" id="wa" target="_blank" rel="noopener">Avisarle por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
 <script>
 /* ===== PERSONALIZA AQUÍ ===== */
 var CONFIG = {
-  nombre: "",                       // Ej: "Camila" (déjalo vacío para no usar nombre)
-  cuando: "Sábado, 7:00 p. m.",
+  nombre: "Querida Carito",   // Ej: "Camila". Si lo dejas vacío dirá "Para ti"
+  // Verso original de ejemplo. Cámbialo por tu poema (usa \n para saltar de línea).
+  poema: "Quiero conocer la longitud de tus chinos en un dia humedo, conocer la cantidad y posicion de tus lunares, y aprenderme tu risa",
+  // GIFs de los costados (archivos en la misma carpeta). Si no existen, se muestra un emoji.
+  gifIzq: "gif1.gif",
+  gifDer: "gif2.gif",
+  // Paradas del carrete: foto, hora, título y texto
+  paradas: [
+    {foto:"foto1.jpg", hora:"3:00 p. m.", titulo:"Museo de la tecnologia", texto:"Se ve genial el museo y tiene dinosaurioooos"},
+    {foto:"foto2.jpg", hora:"6:00 p. m.", titulo:"Cafeteria", texto:"Un lugar tranquilo para platicar sin prisa."},
+    {foto:"foto2.jpg", hora:"7:00 p. m.", titulo:"Cafeteria", texto:"Caminar un rato y ver qué se nos ocurre."},
+    {foto:"foto3.jpg", hora:"8:30 p. m.", titulo:"Postre", texto:"Una chaska como que no."}
+  ],
+  cuando: "Domingo 12 de diciembre, 3:00 p. m.",
   donde:  "Un lugar que te va a gustar",
-  plan:   "Cenar, platicar y reírnos mucho",
-  mensaje:"Llevo tiempo queriendo invitarte, y creo que una buena conversación y un buen rato juntos se nos darían muy bien.",
-  respuesta:"Me hiciste el día. Nos vemos pronto.",
-  whatsapp:"529511917474",                      // Tu número con código de país, solo dígitos. Ej: "523312345678"
-  mensajeWa:"¡Sí quiero salir contigo! 💖"
+  respuesta: "Me hiciste el día. Nos vemos pronto.",
+  // Imágenes que caen al decir que sí (sin extensión: se detecta png, jpg, jpeg, webp o gif)
+  confeti: ["PK1","PK2","PK3"],
+  whatsapp: "529511917474",   // número con código de país, solo dígitos
+  mensajeWa: "¡Sí quiero salir contigo! 💖"
 };
 /* ============================ */
 var $ = function(id){return document.getElementById(id)};
+
+/* Portada */
+$("name").textContent = CONFIG.nombre ? "Para " + CONFIG.nombre : "Para ti";
+$("poem").textContent = CONFIG.poema;
+function side(id, src, emoji){
+  var box = $(id), im = new Image();
+  im.alt = "";
+  im.onerror = function(){ box.innerHTML = '<span class="ph" aria-hidden="true">' + emoji + '</span>'; };
+  box.appendChild(im);
+  im.src = src;
+}
+side("gifL", CONFIG.gifIzq, "🌹");
+side("gifR", CONFIG.gifDer, "✨");
+
+/* Carrete */
+var rail = $("rail"), dots = $("dots"), n = CONFIG.paradas.length, cur = 0, auto = null;
+CONFIG.paradas.forEach(function(p, i){
+  var s = document.createElement("div");
+  s.className = "slide";
+  s.innerHTML = '<div class="pic"><span aria-hidden="true">📷</span></div>' +
+    '<div class="cap"><div class="h"></div><div class="t"></div><p></p></div>';
+  s.querySelector(".h").textContent = p.hora;
+  s.querySelector(".t").textContent = p.titulo;
+  s.querySelector("p").textContent = p.texto;
+  var im = new Image();
+  im.alt = p.titulo;
+  im.onload = function(){ s.querySelector(".pic").appendChild(im); };
+  im.src = p.foto;
+  rail.appendChild(s);
+  var d = document.createElement("i");
+  if (i === 0) d.className = "on";
+  dots.appendChild(d);
+});
+function go(i){
+  cur = (i + n) % n;
+  rail.scrollTo({left: cur * rail.clientWidth, behavior: "smooth"});
+}
+rail.addEventListener("scroll", function(){
+  var i = Math.round(rail.scrollLeft / rail.clientWidth);
+  Array.prototype.forEach.call(dots.children, function(d, k){ d.className = k === i ? "on" : ""; });
+  cur = i;
+});
+function stopAuto(){ if (auto) { clearInterval(auto); auto = null; } }
+$("prev").addEventListener("click", function(){ stopAuto(); go(cur - 1); });
+$("next").addEventListener("click", function(){ stopAuto(); go(cur + 1); });
+rail.addEventListener("pointerdown", stopAuto);
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  auto = setInterval(function(){ go(cur + 1); }, 4500);
+}
+
+/* Pregunta */
+$("when").textContent = CONFIG.cuando;
+$("where").textContent = CONFIG.donde;
+$("doneText").textContent = CONFIG.respuesta;
 if (CONFIG.nombre) {
   $("title").textContent = CONFIG.nombre + ", ¿quieres salir conmigo?";
   $("doneTitle").textContent = "¡Dijiste que sí, " + CONFIG.nombre + "!";
 }
-$("when").textContent = CONFIG.cuando;
-$("where").textContent = CONFIG.donde;
-$("what").textContent = CONFIG.plan;
-$("lead").textContent = CONFIG.mensaje;
-$("doneText").textContent = CONFIG.respuesta;
 if (CONFIG.whatsapp) {
   var num = CONFIG.whatsapp.replace(/\D/g, "");
   $("wa").href = "https://wa.me/" + num + "?text=" + encodeURIComponent(CONFIG.mensajeWa);
   $("wa").classList.add("on");
 }
 
-var no = $("no");
+var no = $("no"), fin = $("final"), drift = null;
 function dodge(e){
-  if (e) e.preventDefault();
-  var w = window.innerWidth, h = window.innerHeight;
-  var bw = no.offsetWidth, bh = no.offsetHeight;
+  if (e && e.preventDefault) e.preventDefault();
+  var w = fin.clientWidth, h = fin.clientHeight;
   no.classList.add("free");
-  no.style.left = Math.max(8, Math.random() * (w - bw - 16)) + "px";
-  no.style.top  = Math.max(8, Math.random() * (h - bh - 16)) + "px";
+  no.style.left = Math.max(8, Math.random() * (w - no.offsetWidth - 16)) + "px";
+  no.style.top  = Math.max(8, Math.random() * (h - no.offsetHeight - 16)) + "px";
+  if (!drift) drift = setInterval(dodge, 1400);
 }
 no.addEventListener("mouseenter", dodge);
 no.addEventListener("touchstart", dodge, {passive:false});
 no.addEventListener("click", dodge);
 
+function pk(base){
+  var im = new Image(), ex = ["png","jpg","jpeg","webp","gif"], k = 0;
+  im.alt = "";
+  if (/\.\w+$/.test(base)) { im.onerror = function(){ im.style.display = "none"; }; im.src = base; return im; }
+  im.onerror = function(){ k++; if (k < ex.length) im.src = base + "." + ex[k]; else im.style.display = "none"; };
+  im.src = base + "." + ex[0];
+  return im;
+}
 $("yes").addEventListener("click", function(){
+  if (drift) clearInterval(drift);
+  no.style.display = "none";
   $("ask").classList.add("off");
   $("done").classList.add("on");
-  no.style.display = "none";
-  var icons = ["💖","💗","💕","🌹","✨"];
-  for (var i = 0; i < 36; i++) {
-    var s = document.createElement("span");
-    s.className = "fall";
-    s.textContent = icons[i % icons.length];
-    s.style.left = Math.random() * 100 + "vw";
-    s.style.animationDuration = (3 + Math.random() * 3) + "s";
-    s.style.animationDelay = (Math.random() * 1.5) + "s";
-    document.body.appendChild(s);
+  var icons = ["💖","💗","💕","🌹","✨"], c = CONFIG.confeti || [];
+  for (var i = 0; i < 40; i++) {
+    var el;
+    if (c.length && i % 3 === 0) {
+      el = pk(c[(i / 3 | 0) % c.length]);
+      el.className = "fall img";
+      var sz = 60 + Math.random() * 40;
+      el.style.width = el.style.height = sz + "px";
+    } else {
+      el = document.createElement("span");
+      el.className = "fall";
+      el.textContent = icons[i % icons.length];
+      el.style.fontSize = "24px";
+    }
+    el.style.left = Math.random() * 92 + "vw";
+    el.style.animationDuration = (3.5 + Math.random() * 3) + "s";
+    el.style.animationDelay = (Math.random() * 1.5) + "s";
+    document.body.appendChild(el);
   }
 });
 </script>
