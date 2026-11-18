@@ -89,11 +89,19 @@ button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offs
 .ask.off{display:none}
 .fall{position:fixed;top:-120px;pointer-events:none;z-index:9;animation:fall linear forwards}
 .fall.img{object-fit:contain}  //.fall.img{border-radius:12px;object-fit:cover;box-shadow:0 4px 14px #0004}
+.mus{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:20;padding:8px 14px;font-size:1.2rem;background:var(--card);color:var(--ink);backdrop-filter:blur(6px)}
+.walker{position:fixed;bottom:calc(8px + env(safe-area-inset-bottom,0px));left:0;z-index:9;pointer-events:none;animation:walk 7s linear 3 forwards}
+.walker img{display:block;width:clamp(64px,18vw,110px);height:auto;animation:hop .45s ease-in-out infinite alternate}
+@keyframes walk{from{transform:translateX(-140px)}to{transform:translateX(calc(100vw + 140px))}}
+@keyframes hop{to{transform:translateY(-22px)}}
 @keyframes fall{to{transform:translateY(120vh) rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.heart,.hint span,.fall{animation:none}.done.on{animation:none}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.heart,.hint span,.fall,.walker,.walker img{animation:none}.done.on{animation:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
+
+<button class="mus" id="mus" aria-label="Activar o silenciar la música">🔇</button>
+<audio id="bgm" loop preload="auto"></audio>
 
 <section id="s1">
   <div class="hero">
@@ -148,27 +156,49 @@ button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offs
 var CONFIG = {
   nombre: "Carito",   // Ej: "Camila". Si lo dejas vacío dirá "Para ti"
   // Verso original de ejemplo. Cámbialo por tu poema (usa \n para saltar de línea).
-  poema: "Quiero conocer la longitud de tus chinos en un dia humedo, conocer la cantidad y posicion de tus lunares, y aprenderme tu risa",
+  poema: "Quiero conocer la longitud de tus chinos en un dia comun, conocer la cantidad y posicion de tus lunares, y aprenderme tu risa",
   // GIFs de los costados (archivos en la misma carpeta). Si no existen, se muestra un emoji.
   gifIzq: "Gifs/gif1.gif",
   gifDer: "Gifs/gif2.gif",
   // Paradas del carrete: foto, hora, título y texto
   paradas: [
-    {foto:"Imagenes/foto1.jpg", hora:"3:00 p. m.", titulo:"Museo de la tecnologia", texto:"Se ve genial el museo y tiene dinosaurioooos"},
-    {foto:"Imagenes/foto2.jpg", hora:"6:00 p. m.", titulo:"Cafeteria", texto:"Un lugar tranquilo para platicar sin prisa."},
-    {foto:"Imagenes/foto2.jpg", hora:"7:00 p. m.", titulo:"Cafeteria", texto:"Caminar un rato y ver qué se nos ocurre."},
-    {foto:"Imagenes/foto3.jpg", hora:"8:30 p. m.", titulo:"Postre", texto:"Una chaska como que no."}
+    {foto:"Imagenes/foto1.jpg", hora:"3:00 p. m.", titulo:"Inmersum Ags", texto:"Se ve genial el museo!!"},
+    {foto:"Imagenes/foto2.jpg", hora:"6:00 p. m.", titulo:"Cafebreria Coyoacan", texto:"Un lugar tranquilo para platicar sin prisa y la vista se ve genial."},
+    {foto:"Imagenes/foto3.jpg", hora:"7:00 p. m.", titulo:"Arpa Roof by Aguamiel", texto:"A esta hora podemos ver la ciudad de la noche desde la terraza :3"},
+    {foto:"Imagenes/foto3.jpg", hora:"8:30 p. m.", titulo:"Plaza patria", texto:"Una chaska como que no, bueno siento que ahi deben vender mientras caminamos en la plaza."}
   ],
   cuando: "Domingo 12 de diciembre, 3:00 p. m.",
   donde:  "Un lugar que te va a gustar",
   respuesta: "Me hiciste el día. Nos vemos pronto.",
   // Imágenes que caen al decir que sí (sin extensión: se detecta png, jpg, jpeg, webp o gif)
   confeti: ["Imagenes/PK1","Imagenes/PK2","Imagenes/PK3"],
+  // Desfile al decir que sí: imágenes que cruzan la pantalla saltando (puedes agregar más)
+  pokemons: ["Imagenes/PK1","Imagenes/PK2","Imagenes/PK3"],
+  // Música de fondo: archivo mp3 dentro de la carpeta Musica. Déjalo vacío ("") para no usar música.
+  musica: "Musica/cancion.mp3",
+  volumen: 0.4,   // de 0 a 1
   whatsapp: "529511917474",   // número con código de país, solo dígitos
   mensajeWa: "¡Sí quiero salir contigo! 💖"
 };
 /* ============================ */
 var $ = function(id){return document.getElementById(id)};
+
+/* Música */
+var bgm = $("bgm"), mus = $("mus"), playing = false, userPaused = false;
+if (CONFIG.musica) { bgm.src = CONFIG.musica; bgm.volume = CONFIG.volumen; } else { mus.style.display = "none"; }
+function setMus(on){
+  if (on) {
+    var p = bgm.play();
+    if (p && p.then) p.then(function(){ playing = true; mus.textContent = "🔊"; }).catch(function(){});
+  } else { bgm.pause(); playing = false; mus.textContent = "🔇"; }
+}
+mus.addEventListener("click", function(){ userPaused = playing; setMus(!playing); });
+function first(e){
+  if (playing || userPaused || !CONFIG.musica) return;
+  if (e.target.closest && e.target.closest("#mus")) return;
+  setMus(true);
+}
+["click","touchend","keydown"].forEach(function(t){ document.addEventListener(t, first); });
 
 /* Portada */
 $("name").textContent = CONFIG.nombre ? "Para " + CONFIG.nombre : "Para ti";
@@ -278,6 +308,14 @@ $("yes").addEventListener("click", function(){
     el.style.animationDelay = (Math.random() * 1.5) + "s";
     document.body.appendChild(el);
   }
+  (CONFIG.pokemons || []).forEach(function(base, j){
+    var w = document.createElement("div");
+    w.className = "walker";
+    w.style.animationDuration = (6 + Math.random() * 2) + "s";
+    w.style.animationDelay = (j * 1.2) + "s";
+    w.appendChild(pk(base));
+    document.body.appendChild(w);
+  });
 });
 </script>
 </body>
