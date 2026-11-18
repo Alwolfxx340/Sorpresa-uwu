@@ -89,7 +89,16 @@ button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offs
 .ask.off{display:none}
 .fall{position:fixed;top:-120px;pointer-events:none;z-index:9;animation:fall linear forwards}
 .fall.img{object-fit:contain}  //.fall.img{border-radius:12px;object-fit:cover;box-shadow:0 4px 14px #0004}
-.mus{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:20;padding:8px 14px;font-size:1.2rem;background:var(--card);color:var(--ink);backdrop-filter:blur(6px)}
+.player{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:10px;z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-width:calc(100vw - 20px)}
+.pbar{display:flex;gap:6px}
+.mus{padding:8px 13px;font-size:1.1rem;background:var(--card);color:var(--ink);backdrop-filter:blur(6px)}
+.now{display:none;background:var(--card);color:var(--ink);border:2px solid var(--rose);border-radius:999px;padding:8px 14px;font-weight:500;backdrop-filter:blur(6px);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.now.on{display:block;animation:pop .4s ease-out}
+.menu{display:none;background:var(--card);border:2px solid var(--rose);border-radius:18px;padding:6px;backdrop-filter:blur(8px);max-height:50vh;overflow-y:auto;min-width:200px;max-width:100%}
+.menu.on{display:block}
+.trk{display:block;width:100%;text-align:left;background:transparent;color:var(--ink);border:0;border-radius:12px;padding:10px 12px;font-size:.98rem}
+.trk.cur{background:var(--rose);color:var(--rose-ink)}
+@media (max-width:600px){.hero.duo{grid-template-columns:1fr 1fr}.hero.duo .mid{grid-column:1/-1;grid-row:2}.hero.duo .side img{max-height:16vh}}
 .walker{position:fixed;bottom:calc(8px + env(safe-area-inset-bottom,0px));left:0;z-index:9;pointer-events:none;animation:walk 7s linear 3 forwards}
 .walker img{display:block;width:clamp(64px,18vw,110px);height:auto;animation:hop .45s ease-in-out infinite alternate}
 @keyframes walk{from{transform:translateX(-140px)}to{transform:translateX(calc(100vw + 140px))}}
@@ -100,8 +109,16 @@ button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offs
 </head>
 <body>
 
-<button class="mus" id="mus" aria-label="Activar o silenciar la música">🔇</button>
-<audio id="bgm" loop preload="auto"></audio>
+<div class="player" id="player">
+  <div class="pbar">
+    <button class="mus" id="mus" aria-label="Activar o silenciar la música">🔇</button>
+    <button class="mus" id="nxt" aria-label="Siguiente canción">⏭</button>
+    <button class="mus" id="lst" aria-label="Lista de canciones" aria-expanded="false">☰</button>
+  </div>
+  <div class="now" id="now" aria-live="polite"></div>
+  <div class="menu" id="menu"></div>
+</div>
+<audio id="bgm" preload="auto"></audio>
 
 <section id="s1">
   <div class="hero">
@@ -117,7 +134,9 @@ button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offs
 </section>
 
 <section id="s2">
-  <div class="wrap">
+  <div class="hero duo">
+  <div class="side" id="gifL2"></div>
+  <div class="wrap mid">
     <h2>Esto es lo que tengo pensado</h2>
     <p class="lead">Tres paradas para pasar un buen rato juntos.</p>
     <div class="rail" id="rail"></div>
@@ -127,10 +146,14 @@ button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offs
       <button class="nav" id="next" aria-label="Siguiente">›</button>
     </div>
   </div>
+  <div class="side" id="gifR2"></div>
+  </div>
 </section>
 
 <section class="final" id="final">
-  <div class="wrap">
+  <div class="hero duo">
+  <div class="side" id="gifL3"></div>
+  <div class="wrap mid">
     <div class="ask" id="ask">
       <h2 id="title">¿Quieres salir conmigo?</h2>
       <dl class="plan">
@@ -149,6 +172,8 @@ button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offs
       <a class="wa" id="wa" target="_blank" rel="noopener">Avisarle por WhatsApp</a>
     </div>
   </div>
+  <div class="side" id="gifR3"></div>
+  </div>
 </section>
 
 <script>
@@ -156,26 +181,39 @@ button:focus-visible,.wa:focus-visible{outline:3px solid var(--ink);outline-offs
 var CONFIG = {
   nombre: "Carito",   // Ej: "Camila". Si lo dejas vacío dirá "Para ti"
   // Verso original de ejemplo. Cámbialo por tu poema (usa \n para saltar de línea).
-  poema: "Quiero conocer la longitud de tus chinos en un dia comun, conocer la cantidad y posicion de tus lunares, y aprenderme tu risa",
+  poema: "Quiero conocer la longitud de tus chinos en un dia humedo, conocer la cantidad y posicion de tus lunares, y aprenderme tu risa",
   // GIFs de los costados (archivos en la misma carpeta). Si no existen, se muestra un emoji.
   gifIzq: "Gifs/gif1.gif",
   gifDer: "Gifs/gif2.gif",
+  // GIFs de la sección del carrete y de la sección final
+  gifIzq2: "Gifs/gif3.gif",
+  gifDer2: "Gifs/gif4.gif",
+  gifIzq3: "Gifs/gif5.gif",
+  gifDer3: "Gifs/gif6.gif",
   // Paradas del carrete: foto, hora, título y texto
   paradas: [
-    {foto:"Imagenes/foto1.jpg", hora:"3:00 p. m.", titulo:"Inmersum Ags", texto:"Se ve genial el museo!!"},
-    {foto:"Imagenes/foto2.jpg", hora:"6:00 p. m.", titulo:"Cafebreria Coyoacan", texto:"Un lugar tranquilo para platicar sin prisa y la vista se ve genial."},
-    {foto:"Imagenes/foto3.jpg", hora:"7:00 p. m.", titulo:"Arpa Roof by Aguamiel", texto:"A esta hora podemos ver la ciudad de la noche desde la terraza :3"},
-    {foto:"Imagenes/foto3.jpg", hora:"8:30 p. m.", titulo:"Plaza patria", texto:"Una chaska como que no, bueno siento que ahi deben vender mientras caminamos en la plaza."}
+    {foto:"imagenes/foto1.jpg", hora:"3:00 p. m.", titulo:"Museo de la tecnologia", texto:"Se ve genial el museo y tiene dinosaurioooos"},
+    {foto:"imagenes/foto2.jpg", hora:"6:00 p. m.", titulo:"Cafeteria", texto:"Un lugar tranquilo para platicar sin prisa."},
+    {foto:"imagenes/foto2.jpg", hora:"7:00 p. m.", titulo:"Cafeteria", texto:"Caminar un rato y ver qué se nos ocurre."},
+    {foto:"imagenes/foto3.jpg", hora:"8:30 p. m.", titulo:"Postre", texto:"Una chaska como que no."}
   ],
   cuando: "Domingo 12 de diciembre, 3:00 p. m.",
-  donde:  "Un lugar que te va a gustar",
+  donde:  "En alguna placita",
   respuesta: "Me hiciste el día. Nos vemos pronto.",
   // Imágenes que caen al decir que sí (sin extensión: se detecta png, jpg, jpeg, webp o gif)
-  confeti: ["Imagenes/PK1","Imagenes/PK2","Imagenes/PK3"],
+  confeti: ["imagenes/PK1","imagenes/PK2","imagenes/PK3"],
   // Desfile al decir que sí: imágenes que cruzan la pantalla saltando (puedes agregar más)
-  pokemons: ["Imagenes/PK1","Imagenes/PK2","Imagenes/PK3"],
-  // Música de fondo: archivo mp3 dentro de la carpeta Musica. Déjalo vacío ("") para no usar música.
-  musica: "Musica/cancion.mp3",
+  pokemons: ["imagenes/PK1","imagenes/PK2","imagenes/PK3"],
+  // Música de fondo (lista de canciones). Cada una lleva título y archivo dentro de la carpeta Musica.
+  // Con una sola canción se repite en bucle; con varias pasan una tras otra.
+  // Para agregar otra: pon una coma al final de la línea anterior y copia la línea con otro título y archivo.
+  canciones: [
+    {titulo:"Chinita Linda- Alvaro Diaz", archivo:"Musica/cancion1.mp3"},
+    {titulo:"Kirinji jikan ga nai - Kirinji", archivo:"Musica/cancion2.mp3"},
+    {titulo:"How was your day? - Mellow Fellos ft Clairo", archivo:"Musica/cancion3.mp3"},
+    {titulo:"Old Soul - Saint Motel", archivo:"Musica/cancion4.mp3"},
+    {titulo:"My type - Saint Motel", archivo:"Musica/cancion5.mp3"}
+  ],
   volumen: 0.4,   // de 0 a 1
   whatsapp: "529511917474",   // número con código de país, solo dígitos
   mensajeWa: "¡Sí quiero salir contigo! 💖"
@@ -184,18 +222,50 @@ var CONFIG = {
 var $ = function(id){return document.getElementById(id)};
 
 /* Música */
-var bgm = $("bgm"), mus = $("mus"), playing = false, userPaused = false;
-if (CONFIG.musica) { bgm.src = CONFIG.musica; bgm.volume = CONFIG.volumen; } else { mus.style.display = "none"; }
+var bgm = $("bgm"), mus = $("mus"), nxt = $("nxt"), lst = $("lst"), menu = $("menu"), now = $("now"),
+    pl = CONFIG.canciones || [], idx = 0, shown = -1, playing = false, userPaused = false, toastT = null;
+function toast(t){
+  now.textContent = "♪ " + t; now.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(function(){ now.classList.remove("on"); }, 5000);
+}
+function mark(){
+  Array.prototype.forEach.call(menu.children, function(b, k){ b.className = "trk" + (k === idx ? " cur" : ""); });
+}
 function setMus(on){
   if (on) {
     var p = bgm.play();
-    if (p && p.then) p.then(function(){ playing = true; mus.textContent = "🔊"; }).catch(function(){});
+    if (p && p.then) p.then(function(){
+      playing = true; mus.textContent = "🔊";
+      if (shown !== idx) { shown = idx; toast(pl[idx].titulo); }
+    }).catch(function(){});
   } else { bgm.pause(); playing = false; mus.textContent = "🔇"; }
 }
+function load(i, play){
+  idx = (i + pl.length) % pl.length;
+  bgm.src = pl[idx].archivo; mark();
+  if (play) setMus(true);
+}
+if (!pl.length) { $("player").style.display = "none"; }
+else {
+  bgm.volume = CONFIG.volumen; bgm.loop = pl.length === 1; bgm.src = pl[0].archivo;
+  if (pl.length < 2) { nxt.style.display = "none"; lst.style.display = "none"; }
+  pl.forEach(function(sg, i){
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = (i + 1) + ". " + sg.titulo;
+    b.addEventListener("click", function(){ userPaused = false; menu.classList.remove("on"); load(i, true); });
+    menu.appendChild(b);
+  });
+  mark();
+}
+bgm.addEventListener("ended", function(){ load(idx + 1, true); });
 mus.addEventListener("click", function(){ userPaused = playing; setMus(!playing); });
+nxt.addEventListener("click", function(){ userPaused = false; load(idx + 1, true); });
+lst.addEventListener("click", function(){
+  var open = menu.classList.toggle("on"); lst.setAttribute("aria-expanded", open);
+});
 function first(e){
-  if (playing || userPaused || !CONFIG.musica) return;
-  if (e.target.closest && e.target.closest("#mus")) return;
+  if (playing || userPaused || !pl.length) return;
+  if (e.target.closest && e.target.closest("#player")) return;
   setMus(true);
 }
 ["click","touchend","keydown"].forEach(function(t){ document.addEventListener(t, first); });
@@ -212,6 +282,10 @@ function side(id, src, emoji){
 }
 side("gifL", CONFIG.gifIzq, "🌹");
 side("gifR", CONFIG.gifDer, "✨");
+side("gifL2", CONFIG.gifIzq2, "💕");
+side("gifR2", CONFIG.gifDer2, "🌸");
+side("gifL3", CONFIG.gifIzq3, "🎀");
+side("gifR3", CONFIG.gifDer3, "💫");
 
 /* Carrete */
 var rail = $("rail"), dots = $("dots"), n = CONFIG.paradas.length, cur = 0, auto = null;
