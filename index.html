@@ -193,9 +193,9 @@ var CONFIG = {
   // Paradas del carrete: foto, hora, título y texto
   paradas: [
     {foto:"imagenes/foto1.jpg", hora:"3:00 p. m.", titulo:"Inmersum Ags", texto:"Se ve genial el museo!!!"},
-    {foto:"imagenes/foto2.jpg", hora:"6:00 p. m.", titulo:"Cafebreria coyoacan", texto:"Un lugar tranquilo para platicar sin prisa y la terraza se ve genial."},
+    {foto:"imagenes/foto2.jpg", hora:"6:00 p. m.", titulo:"Cafebreria coyoacan", texto:"Un lugar tranquilo para platicar y la terraza se ve genial."},
     {foto:"imagenes/foto3.jpg", hora:"7:00 p. m.", titulo:"Arpa Roof by Aguamiel", texto:"Ver la ciudad de noche desde acá debe ser el lugar perfecto para conocernos más"},
-    {foto:"imagenes/foto3.jpg", hora:"8:30 p. m.", titulo:"Postre en Plaza patria", texto:"Una chaska como que no, bueno imagino que ahi venden."}
+    {foto:"imagenes/foto4.jpg", hora:"8:30 p. m.", titulo:"Postre en Plaza patria", texto:"Una chaska como que no, bueno imagino que ahi venden."}
   ],
   cuando: "Domingo 12 de diciembre, 3:00 p. m.",
   donde:  "En alguna placita",
@@ -258,6 +258,7 @@ else {
   mark();
 }
 bgm.addEventListener("ended", function(){ load(idx + 1, true); });
+bgm.addEventListener("error", function(){ if (pl[idx]) toast("⚠ No se encontró: " + pl[idx].archivo); });
 mus.addEventListener("click", function(){ userPaused = playing; setMus(!playing); });
 nxt.addEventListener("click", function(){ userPaused = false; load(idx + 1, true); });
 lst.addEventListener("click", function(){
